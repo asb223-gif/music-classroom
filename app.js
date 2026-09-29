@@ -1,5 +1,5 @@
 import {firebaseConfig} from './firebase-config.js';
-import {NOTES,findChords} from './chords.js';
+import {NOTES,findChords} from './chords.js?v=3';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const selectedNotes=new Set();let audio;
