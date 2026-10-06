@@ -24,6 +24,7 @@ if (typeof document !== 'undefined') {
       el('tempoResult').hidden = false;
       el('tempoBpm').textContent = result.bpm.toFixed(6).replace(/\.?0+$/, '');
       el('tempoSummary').textContent = `${timeText(target)}에 ${bar}마디 ${beat}박 · ${meter} · ♩ 기준`;
+      const track = el('tempoBeatTrack'); if (track) track.replaceChildren(...Array.from({length: result.numerator}, (_, i) => { const dot = document.createElement('span'); dot.textContent = String(i + 1); dot.className = i + 1 === beat ? 'active' : ''; if(i + 1 === beat) dot.setAttribute('aria-label', `${i + 1}박, 목표 위치`); return dot; }));
       el('tempoFormula').textContent = `(${bar - 1}마디 × ${result.numerator} + ${beat - 1}) × 4/${result.denominator} × 60 ÷ ${target}초 = ${result.bpm.toFixed(6)} BPM`;
       el('tempoRounding').replaceChildren(...[0,1,2].map(digits => {
         const bpm = Number(result.bpm.toFixed(digits));
