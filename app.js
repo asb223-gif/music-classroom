@@ -11,7 +11,7 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-const pageIds=['home','tools','tempo','library','logic'];
+const pageIds=['home','tools','tempo','library','logic','theory'];
 function showPage(){
   const requested=location.hash.slice(1),page=pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
@@ -48,3 +48,12 @@ if (legacyStudentToken) {
     },()=>{$('materialEmpty').textContent='자료를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'});
   }catch{$('materialEmpty').textContent='자료실에 연결하지 못했습니다.'}
 }
+
+let intervalAudio;
+document.querySelectorAll('[data-interval]').forEach(button=>button.onclick=async()=>{
+  try{
+    intervalAudio??=new(window.AudioContext||window.webkitAudioContext)();await intervalAudio.resume();
+    const steps=[0,2,4,5,7,9,11,12],i=Number(button.dataset.interval),start=intervalAudio.currentTime;
+    [0,steps[i]].forEach((pitch,index)=>{const oscillator=intervalAudio.createOscillator(),gain=intervalAudio.createGain();oscillator.type='triangle';oscillator.frequency.value=261.625565*Math.pow(2,pitch/12);const t=start+index*.65;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.15,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.6);oscillator.connect(gain).connect(intervalAudio.destination);oscillator.start(t);oscillator.stop(t+.65)});
+  }catch{alert('소리를 재생하지 못했습니다. 브라우저의 소리 설정을 확인해 주세요.')}
+});
