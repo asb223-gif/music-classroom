@@ -1,3 +1,4 @@
+import {youtubeVideoId} from './classroom-data.js?v=12';
 import {firebaseConfig} from './firebase-config.js';
 import {NOTES,findChords} from './chords.js?v=8';
 const $=id=>document.getElementById(id);
@@ -32,6 +33,8 @@ if (legacyStudentToken) {
         const link=document.createElement('a');link.textContent=m.type==='video'?'영상 보기 ↗':'다운로드 ↗';link.target='_blank';link.rel='noopener noreferrer';
         if(m.type==='video'){try{const url=new URL(m.url);if(['http:','https:'].includes(url.protocol))link.href=url.href;else throw Error()}catch{link.textContent='주소 확인 필요'}}
         else {link.href='#';link.onclick=async e=>{e.preventDefault();try{const url=await S.getDownloadURL(S.ref(storage,m.path));window.open(url,'_blank','noopener')}catch{alert('파일을 열 수 없습니다.')}}}
+        const videoId=m.type==='video'?youtubeVideoId(m.url):null;
+        if(videoId){const preview=document.createElement('a');preview.className='youtube-preview';preview.href=link.href;preview.target='_blank';preview.rel='noopener noreferrer';const img=document.createElement('img');img.src=`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;img.alt=m.title||'유튜브 영상';img.loading='lazy';img.onerror=()=>preview.remove();const play=document.createElement('span');play.textContent='▶';play.setAttribute('aria-hidden','true');preview.append(img,play);card.append(preview)}
         card.append(badge,title,description,link);return card;
       }));
     },()=>{$('materialEmpty').textContent='자료를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'});
