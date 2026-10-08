@@ -13,11 +13,11 @@ $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);select
 const navLinks=[...document.querySelectorAll('#nav a')];
 const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice'];
 function showPage(){
-  const requested=location.hash.slice(1),page=pageIds.includes(requested)?requested:'home';
+  const requested=location.hash.slice(1),page=requested==='nextIntervalLessons'?'theory':pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
   document.querySelector('.tool-launchers').hidden=page!=='home';
   navLinks.forEach(link=>{const active=link.hash==='#'+page;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
-  $('nav').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
+  $('nav').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false');if(requested==='nextIntervalLessons')requestAnimationFrame(()=>$('nextIntervalLessons').scrollIntoView({behavior:'smooth'}));else window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('hashchange',showPage);showPage();
 // Older student links open the separate read-only page.
@@ -49,11 +49,19 @@ if (legacyStudentToken) {
   }catch{$('materialEmpty').textContent='자료실에 연결하지 못했습니다.'}
 }
 
-let intervalAudio;
+
+let intervalAudio,pianoBuffers,playRevision=0;
+async function loadPiano(){
+  if(!pianoBuffers)pianoBuffers=Promise.all(['C4','Fs4','C5'].map(async name=>{const response=await fetch(new URL(`piano/${name}.mp3`,import.meta.url),{signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('피아노 파일을 찾을 수 없습니다.');return intervalAudio.decodeAudioData(await response.arrayBuffer())})).catch(error=>{pianoBuffers=null;throw error});
+  return pianoBuffers;
+}
 document.querySelectorAll('[data-interval]').forEach(button=>button.onclick=async()=>{
+  const revision=++playRevision,label=button.querySelector('.interval-listen');const original='▷ 두 음 듣기';
   try{
-    intervalAudio??=new(window.AudioContext||window.webkitAudioContext)();await intervalAudio.resume();
-    const steps=[0,2,4,5,7,9,11,12],i=Number(button.dataset.interval),start=intervalAudio.currentTime;
-    [0,steps[i]].forEach((pitch,index)=>{const oscillator=intervalAudio.createOscillator(),gain=intervalAudio.createGain();oscillator.type='triangle';oscillator.frequency.value=261.625565*Math.pow(2,pitch/12);const t=start+index*.65;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.15,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.6);oscillator.connect(gain).connect(intervalAudio.destination);oscillator.start(t);oscillator.stop(t+.65)});
-  }catch{alert('소리를 재생하지 못했습니다. 브라우저의 소리 설정을 확인해 주세요.')}
+    intervalAudio??=new(window.AudioContext||window.webkitAudioContext)();await intervalAudio.resume();label.textContent='피아노 준비 중…';
+    const buffers=await loadPiano();if(revision!==playRevision)return;
+    const steps=[0,2,4,5,7,9,11,12],i=Number(button.dataset.interval),start=intervalAudio.currentTime+.02;
+    [...new Set([0,steps[i]])].forEach(pitch=>{const sample=pitch<3?0:pitch<9?1:2,base=[0,6,12][sample],source=intervalAudio.createBufferSource(),gain=intervalAudio.createGain();source.buffer=buffers[sample];source.playbackRate.value=Math.pow(2,(pitch-base)/12);gain.gain.setValueAtTime(.5,start);gain.gain.setValueAtTime(.5,start+1.2);gain.gain.exponentialRampToValueAtTime(.0001,start+2.4);source.connect(gain).connect(intervalAudio.destination);source.start(start);source.stop(start+2.5)});
+  }catch{alert('피아노 소리를 불러오지 못했습니다. piano 폴더를 함께 업로드했는지 확인해 주세요.')}
+  finally{label.textContent=original}
 });

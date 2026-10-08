@@ -1,0 +1,5 @@
+Salamander Grand Piano by Alexander Holm.
+MP3 distribution: https://tonejs.github.io/audio/salamander/
+Original: https://rytmenpinne.wordpress.com/sounds-and-such/salamander-grandpiano/
+Creator declared the original library public domain on 4 March 2022. The older distribution is credited under CC BY 3.0: https://creativecommons.org/licenses/by/3.0/
+Three MP3 files copied without file modification. Playback transposes samples and applies volume envelopes.
