@@ -103,7 +103,7 @@ if(!firebaseConfig)message('Firebase 연결 설정이 필요합니다.',true);
 else try{
   const base='https://www.gstatic.com/firebasejs/10.14.1/';
   const [App,fire,authentication,store]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-auth.js'),import(base+'firebase-storage.js')]);
-  F=fire;A=authentication;S=store;const instance=App.initializeApp(firebaseConfig);db=F.getFirestore(instance);auth=A.getAuth(instance);storage=S.getStorage(instance);S.setMaxUploadRetryTime(storage,30000);S.setMaxOperationRetryTime(storage,15000);
+  F=fire;A=authentication;S=store;const instance=App.initializeApp(firebaseConfig);db=F.getFirestore(instance);auth=A.getAuth(instance);storage=S.getStorage(instance);storage.maxUploadRetryTime=30000;storage.maxOperationRetryTime=15000;
   A.onAuthStateChanged(auth,async account=>{
     const revision=++authRevision;user=null;el('teacherWorkspace').hidden=true;el('teacherLogin').hidden=false;el('adminLogout').hidden=!account;
     students=[];lessons=[];payments=[];materials=[];selected=null;
