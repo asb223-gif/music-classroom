@@ -7,7 +7,7 @@ export function publicStudentRecord(student, lessons, updatedAt = Date.now()) {
       date: String(lesson.date || ''),
       week: lesson.week ?? '',
       content: String(lesson.content || '')
-    })).sort((a,b) => b.date.localeCompare(a.date) || Number(b.week) - Number(a.week)),
+    })).sort((a,b) => b.date.localeCompare(a.date) || String(b.week).localeCompare(String(a.week),undefined,{numeric:true})),
     updatedAt
   };
 }
@@ -17,7 +17,11 @@ export function studentLink(token, baseUrl) {
   return url.href;
 }
 export function nextLessonWeek(studentId, lessons) {
-  return Math.max(0, ...lessons.filter(x => x.studentId === studentId).map(x => Number(x.week) || 0)) + 1;
+  const labels=lessons.filter(x=>x.studentId===studentId).map(x=>String(x.week||''));
+  const grouped=labels.filter(x=>/^\d+-\d+$/.test(x)).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  if(grouped.length){const [group,part]=grouped.at(-1).split('-').map(Number);return part>=4?`${group+1}-1`:`${group}-${part+1}`;}
+  if(!labels.length)return '1-1';
+  return String(Math.max(0,...labels.map(x=>Number(x)||0))+1);
 }
 
 export function paymentDate(value, optional=false) {

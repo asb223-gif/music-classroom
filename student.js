@@ -5,7 +5,7 @@ function renderStudentNotes(record) {
   document.title = '내 수업 노트 · 음악 작업실';
   el('studentHeading').textContent = record.name ? `${record.name}님의 수업 노트.` : '내 수업 노트.';
   el('studentCourse').textContent = record.course || '수업에서 배운 내용을 차곡차곡 확인하세요.';
-  const notes = (Array.isArray(record.lessons) ? record.lessons : []).slice().sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')) || Number(b.week)-Number(a.week));
+  const notes = (Array.isArray(record.lessons) ? record.lessons : []).slice().sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')) || String(b.week).localeCompare(String(a.week),undefined,{numeric:true}));
   el('studentReadMessage').textContent = notes.length ? '' : '아직 등록된 수업 기록이 없어요. 수업 후 새 기록이 이곳에 쌓입니다.';
   el('studentSummary').hidden = !notes.length;
   el('studentLessonCount').textContent = `수업 기록 ${notes.length}개`;

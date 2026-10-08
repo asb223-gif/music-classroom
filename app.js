@@ -1,4 +1,4 @@
-import {youtubeVideoId} from './classroom-data.js?v=12';
+import {youtubeVideoId} from './classroom-data.js?v=14';
 import {firebaseConfig} from './firebase-config.js';
 import {NOTES,findChords} from './chords.js?v=8';
 const $=id=>document.getElementById(id);
@@ -11,7 +11,15 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}},{rootMargin:'-10% 0px -65% 0px'});document.querySelectorAll('#home,.section').forEach(s=>observer.observe(s))}
+const pageIds=['home','tools','tempo','library','logic'];
+function showPage(){
+  const requested=location.hash.slice(1),page=pageIds.includes(requested)?requested:'home';
+  pageIds.forEach(id=>$(id).hidden=id!==page);
+  document.querySelector('.tool-launchers').hidden=page!=='home';
+  navLinks.forEach(link=>{const active=link.hash==='#'+page;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
+  $('nav').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
+}
+window.addEventListener('hashchange',showPage);showPage();
 // Older student links open the separate read-only page.
 const legacyStudentToken = new URLSearchParams(location.search).get('student');
 if (legacyStudentToken) {
