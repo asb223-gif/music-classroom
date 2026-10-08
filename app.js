@@ -11,25 +11,29 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
 if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}},{rootMargin:'-10% 0px -65% 0px'});document.querySelectorAll('#home,.section').forEach(s=>observer.observe(s))}
-let db,storage,auth,F,S,A,materials=[],user=null;
-function safeUrl(url){try{const u=new URL(url);return ['https:','http:'].includes(u.protocol)?u.href:null}catch{return null}}
-function drawMaterials(){ $('materialEmpty').hidden=materials.length>0; $('materialList').replaceChildren(...materials.map(m=>{const article=document.createElement('article');article.className='card material';article.innerHTML=`<span class="kind">${m.type==='video'?'영상':'파일'}</span><h3>${esc(m.title)}</h3><p>${esc(m.description)}</p>`;const a=document.createElement('a');a.textContent=m.type==='video'?'영상 보기':'다운로드';a.target='_blank';a.rel='noopener noreferrer';if(m.type==='video'){a.href=safeUrl(m.url)||'#'}else{a.href='#';a.onclick=async e=>{e.preventDefault();try{const u=await S.getDownloadURL(S.ref(storage,m.path));window.open(u,'_blank','noopener')}catch{alert('파일을 열 수 없습니다.')}}}article.append(a);return article}));$('manageMaterials').replaceChildren(...materials.map(m=>{const row=document.createElement('div');row.className='manage-row';const name=document.createElement('span');name.textContent=m.title;const del=document.createElement('button');del.textContent='삭제';del.onclick=()=>deleteMaterial(m);row.append(name,del);return row}))}
-async function deleteMaterial(m){if(!confirm('공개 자료를 삭제할까요?'))return;try{await F.deleteDoc(F.doc(db,'materials',m.id));if(m.path)await S.deleteObject(S.ref(storage,m.path)).catch(()=>{})}catch(e){alert('삭제하지 못했습니다: '+e.message)}}
-function showAdmin(){const yes=!!user;$('loginPanel').hidden=yes;$('adminPanel').hidden=!yes;$('adminEmail').textContent=user?.email||''}
-function renderShare(data){$('publicSite').hidden=true;$('studentView').hidden=false;$('shareHeading').textContent=`${data.name} · ${data.course||'수업 기록'}`;$('shareLessons').replaceChildren(...(data.lessons||[]).map(l=>{const el=document.createElement('article');el.className='card shared-card';el.innerHTML=`<h2>${esc(l.week)}주차 · ${esc(l.date)}</h2><p>${esc(l.content)}</p><p><strong>다음 시간·과제</strong><br>${esc(l.homework||'없음')}</p>`;return el}));if(!data.lessons?.length)$('shareLessons').textContent='아직 등록된 수업 기록이 없습니다.'}
-
-if(!firebaseConfig){$('setupNotice').hidden=false;$('loginForm').querySelector('button').disabled=true}else{try{
-const base='https://www.gstatic.com/firebasejs/10.14.1/';
-const [app,fire,store,authentication]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-storage.js'),import(base+'firebase-auth.js')]);
-F=fire;S=store;A=authentication;const instance=app.initializeApp(firebaseConfig);db=F.getFirestore(instance);storage=S.getStorage(instance);auth=A.getAuth(instance);
-const shareToken=new URLSearchParams(location.search).get('student');
-if(shareToken){$('publicSite').hidden=true;$('studentView').hidden=false;try{const record=await F.getDoc(F.doc(db,'studentViews',shareToken));if(record.exists())renderShare(record.data());else $('shareLessons').textContent='유효하지 않거나 만료된 링크입니다.'}catch{$('shareLessons').textContent='수업 기록을 불러올 수 없습니다.'}}
-else{
-F.onSnapshot(F.query(F.collection(db,'materials'),F.orderBy('createdAt','desc')),snapshot=>{materials=snapshot.docs.map(x=>({id:x.id,...x.data()}));drawMaterials()},error=>{$('materialEmpty').textContent='자료를 불러오지 못했습니다.';console.error(error)});
-A.onAuthStateChanged(auth,u=>{user=u;if(u&&!u.emailVerified){A.sendEmailVerification(u).then(()=>alert('인증 이메일을 보냈습니다. 인증 후 다시 로그인해 주세요.')).catch(()=>{});A.signOut(auth);return}showAdmin()});
-$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginMessage').textContent='로그인 중...';try{await A.signInWithEmailAndPassword(auth,$('email').value,$('password').value);$('loginMessage').textContent='';$('password').value=''}catch{$('loginMessage').textContent='로그인에 실패했습니다. 계정을 확인해 주세요.'}};
-$('logoutBtn').onclick=()=>A.signOut(auth);
-$('materialForm').onsubmit=async e=>{e.preventDefault();const msg=$('uploadMessage');msg.textContent='게시 중...';const type=$('materialType').value,file=$('materialFile').files[0];if(type==='file'&&!file){msg.textContent='파일을 선택해 주세요.';return}if(file&&file.size>25*1024*1024){msg.textContent='파일은 25MB 이하로 올려 주세요.';return}let path='';try{if(type==='file'){path=`public/${crypto.randomUUID()}/${file.name}`;await S.uploadBytes(S.ref(storage,path),file)}await F.addDoc(F.collection(db,'materials'),{title:$('materialTitle').value.trim(),description:$('materialDescription').value.trim(),type,url:type==='video'?$('materialUrl').value.trim():'',path,createdAt:Date.now()});$('materialForm').reset();$('fileField').hidden=true;$('urlField').hidden=false;msg.textContent='자료가 게시되었습니다.'}catch(err){msg.textContent='게시하지 못했습니다: '+err.message;if(path)await S.deleteObject(S.ref(storage,path)).catch(()=>{})}};
-}}
-catch(err){$('setupNotice').hidden=false;$('setupNotice').textContent='Firebase 연결에 실패했습니다. 설정과 인터넷 연결을 확인해 주세요.';console.error(err)}}
-$('materialType').onchange=()=>{const file=$('materialType').value==='file';$('fileField').hidden=!file;$('urlField').hidden=file};
+// Older student links open the separate read-only page.
+const legacyStudentToken = new URLSearchParams(location.search).get('student');
+if (legacyStudentToken) {
+  const destination = new URL('student.html', location.href);
+  destination.searchParams.set('student', legacyStudentToken);
+  location.replace(destination.href);
+} else if (firebaseConfig) {
+  try {
+    const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    const [App,F,S] = await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-storage.js')]);
+    const instance=App.initializeApp(firebaseConfig), db=F.getFirestore(instance), storage=S.getStorage(instance);
+    F.onSnapshot(F.query(F.collection(db,'materials'),F.orderBy('createdAt','desc')),snapshot=>{
+      const materials=snapshot.docs.map(doc=>doc.data());$('materialEmpty').hidden=materials.length>0;
+      $('materialList').replaceChildren(...materials.map(m=>{
+        const card=document.createElement('article');card.className='card material';
+        const badge=document.createElement('span');badge.className='kind';badge.textContent=m.type==='video'?'영상':'파일';
+        const title=document.createElement('h3');title.textContent=m.title||'';
+        const description=document.createElement('p');description.textContent=m.description||'';
+        const link=document.createElement('a');link.textContent=m.type==='video'?'영상 보기 ↗':'다운로드 ↗';link.target='_blank';link.rel='noopener noreferrer';
+        if(m.type==='video'){try{const url=new URL(m.url);if(['http:','https:'].includes(url.protocol))link.href=url.href;else throw Error()}catch{link.textContent='주소 확인 필요'}}
+        else {link.href='#';link.onclick=async e=>{e.preventDefault();try{const url=await S.getDownloadURL(S.ref(storage,m.path));window.open(url,'_blank','noopener')}catch{alert('파일을 열 수 없습니다.')}}}
+        card.append(badge,title,description,link);return card;
+      }));
+    },()=>{$('materialEmpty').textContent='자료를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'});
+  }catch{$('materialEmpty').textContent='자료실에 연결하지 못했습니다.'}
+}
