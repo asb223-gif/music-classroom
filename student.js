@@ -2,7 +2,7 @@ import {firebaseConfig} from './firebase-config.js';
 const el = id => document.getElementById(id);
 const token = new URLSearchParams(location.search).get('student');
 function renderStudentNotes(record) {
-  document.title = '내 수업 노트 · 음악 작업실';
+  document.title = '내 수업 노트 · MUSIC ATELIER';
   el('studentHeading').textContent = record.name ? `${record.name}님의 수업 노트.` : '내 수업 노트.';
   el('studentCourse').textContent = record.course || '수업에서 배운 내용을 차곡차곡 확인하세요.';
   const notes = (Array.isArray(record.lessons) ? record.lessons : []).slice().sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')) || String(b.week).localeCompare(String(a.week),undefined,{numeric:true}));
@@ -13,7 +13,7 @@ function renderStudentNotes(record) {
   el('studentLessonNotes').replaceChildren(...notes.map((note,index) => {
     const card = document.createElement('article'); card.className='student-note card';
     const top=document.createElement('div');top.className='student-note-top';
-    const week=document.createElement('span');week.className='note-week';week.textContent=note.week ? `${note.week}주차` : '수업 기록';
+    const week=document.createElement('span');week.className='note-week';const parts=String(note.week||'').match(/^(\d+)-(\d+)$/);week.textContent=parts?`${parts[1]}차 · ${parts[2]}회차`:note.week?`${note.week}회차`:'수업 기록';
     const date=document.createElement('time');date.textContent=String(note.date||'');if(/^\d{4}-\d{2}-\d{2}$/.test(note.date))date.dateTime=note.date;
     top.append(week,date);if(index===0){const badge=document.createElement('span');badge.className='latest-note';badge.textContent='최근 수업';top.append(badge)}
     const heading=document.createElement('h2');heading.textContent='수업에서 배운 내용';
