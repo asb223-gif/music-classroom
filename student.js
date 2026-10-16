@@ -2,7 +2,7 @@ import {firebaseConfig} from './firebase-config.js';
 const el = id => document.getElementById(id);
 const token = new URLSearchParams(location.search).get('student');
 function renderStudentNotes(record) {
-  document.title = '내 수업 노트 · MUSIC ATELIER';
+  document.title = '내 수업 노트 · ALPACA STUDIO';
   el('studentHeading').textContent = record.name ? `${record.name}님의 수업 노트.` : '내 수업 노트.';
   el('studentCourse').textContent = record.course || '수업에서 배운 내용을 차곡차곡 확인하세요.';
   const notes = (Array.isArray(record.lessons) ? record.lessons : []).slice().sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')) || String(b.week).localeCompare(String(a.week),undefined,{numeric:true}));

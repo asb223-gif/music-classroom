@@ -35,12 +35,20 @@ if (legacyStudentToken) {
       const materials=snapshot.docs.map(doc=>doc.data());$('materialEmpty').hidden=materials.length>0;
       $('materialList').replaceChildren(...materials.map(m=>{
         const card=document.createElement('article');card.className='card material';
-        const badge=document.createElement('span');badge.className='kind';badge.textContent=m.type==='video'?'영상':'파일';
+        const badge=document.createElement('span');badge.className='kind';const originalName=m.fileName||String(m.path||'').split('/').pop()||'자료';const isPdf=/\.pdf$/i.test(originalName)||m.contentType==='application/pdf';badge.textContent=m.type==='video'?'영상':isPdf?'PDF':(originalName.split('.').pop()||'파일').toUpperCase();
         const title=document.createElement('h3');title.textContent=m.title||'';
         const description=document.createElement('p');description.textContent=m.description||'';
         const link=document.createElement('a');link.textContent=m.type==='video'?'영상 보기 ↗':'다운로드 ↗';link.target='_blank';link.rel='noopener noreferrer';
         if(m.type==='video'){try{const url=new URL(m.url);if(['http:','https:'].includes(url.protocol))link.href=url.href;else throw Error()}catch{link.textContent='주소 확인 필요'}}
-        else {link.href='#';link.onclick=async e=>{e.preventDefault();try{const url=await S.getDownloadURL(S.ref(storage,m.path));window.open(url,'_blank','noopener')}catch{alert('파일을 열 수 없습니다.')}}}
+        else {
+          const status=document.createElement('p');status.className='download-status';status.setAttribute('role','status');
+          const fileActions=document.createElement('div');fileActions.className='pdf-actions';
+          const filename=document.createElement('p');filename.className='material-file-note';filename.textContent=originalName;
+          const resolve=()=>S.getDownloadURL(S.ref(storage,m.path));
+          if(isPdf){const preview=document.createElement('button');preview.type='button';preview.textContent='PDF 미리보기';preview.onclick=async()=>{preview.disabled=true;try{const url=await resolve();window.AlpacaResources.openPdf(url,originalName);status.textContent=''}catch{status.textContent='파일을 열 수 없습니다. 잠시 후 다시 시도해 주세요.'}finally{preview.disabled=false}};fileActions.append(preview)}
+          link.textContent=isPdf?'PDF 다운로드 ↓':'파일 다운로드 ↓';link.className='pdf-download';link.href='#';link.onclick=async e=>{e.preventDefault();if(link.getAttribute('aria-busy')==='true')return;link.setAttribute('aria-busy','true');status.textContent='파일을 준비하고 있어요…';try{const url=await resolve();await window.AlpacaResources.downloadRemote(url,originalName,status)}catch{status.textContent='파일을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}finally{link.removeAttribute('aria-busy')}};
+          fileActions.append(link);card.append(badge,title,description,filename,fileActions,status);return card;
+        }
         const videoId=m.type==='video'?youtubeVideoId(m.url):null;
         if(videoId){const preview=document.createElement('a');preview.className='youtube-preview';preview.href=link.href;preview.target='_blank';preview.rel='noopener noreferrer';const img=document.createElement('img');img.src=`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;img.alt=m.title||'유튜브 영상';img.loading='lazy';img.onerror=()=>preview.remove();const play=document.createElement('span');play.textContent='▶';play.setAttribute('aria-hidden','true');preview.append(img,play);card.append(preview)}
         card.append(badge,title,description,link);return card;
