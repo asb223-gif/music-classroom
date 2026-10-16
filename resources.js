@@ -1,6 +1,6 @@
 (()=>{
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pdfPath=name=>'pdf/'+encodeURIComponent(name);
+const pdfPath=name=>'pdf/'+encodeURIComponent(name)+(name==='ALPACA_STUDIO_Chord_Guide.pdf'?'?v=39':'');
 function controls(url,name){return `<div class="pdf-actions"><button type="button" data-pdf-preview="${esc(url)}" data-pdf-title="${esc(name)}">PDF 미리보기</button><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">새 창에서 열기 ↗</a><a class="pdf-download" href="${esc(url)}" download="${esc(name)}">PDF 다운로드 ↓</a></div>`}
 function pdfCard(name){return `<div class="pdf-resource"><strong>${esc(name)}</strong>${controls(pdfPath(name),name)}</div>`}
 let dialog;
@@ -20,6 +20,6 @@ async function downloadRemote(url,name,status){
 document.addEventListener('click',event=>{const b=event.target.closest('[data-pdf-preview]');if(b){event.preventDefault();openPdf(b.dataset.pdfPreview,b.dataset.pdfTitle||'악보 PDF')}});
 window.AlpacaResources={pdfCard,controls,openPdf,downloadRemote};
 const staticList=document.getElementById('staticMaterials');
-if(staticList){const items=[{name:'MUSIC_ATELIER_Motive_Workbook.pdf',title:'모티브 발전 워크북 · 기초편',description:'기존에 제작한 학습용 교재 원본입니다. 최신 11개 기법 분류와 신규 사례는 홈페이지 수업에서 확인하세요.'}];
+if(staticList){const items=[{name:'ALPACA_STUDIO_Chord_Guide.pdf',title:'코드의 구조와 기호',description:'16개 코드의 악보·구성음·음정 관계를 2쪽으로 정리한 교재입니다.'},{name:'ALPACA_STUDIO_Motive_Workbook.pdf',title:'모티브 발전 워크북 · 기초편',description:'반복·동형진행·전위·역행·확대와 축소의 정의와 악보 분석을 정리한 기초편입니다.'}];
 staticList.innerHTML=items.map(item=>`<article class="card material"><span class="kind">PDF · 학습 자료</span><h3>${esc(item.title)}</h3><p>${esc(item.description)}</p><p class="material-file-note">${esc(item.name)}</p>${controls(pdfPath(item.name),item.name)}</article>`).join('')}
 })();
