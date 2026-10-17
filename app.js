@@ -11,12 +11,12 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','voicingLesson'];
+const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','voicingLesson'];
 function showPage(){
   const requested=location.hash.slice(1),page=requested==='nextIntervalLessons'?'theory':pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
   document.querySelector('.tool-launchers').hidden=page!=='home';
-  navLinks.forEach(link=>{const active=link.hash==='#'+page;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
+  navLinks.forEach(link=>{const active=link.hash==='#'+page;link.classList.toggle('active',active);if(active){link.setAttribute('aria-current','page');const group=link.closest('details');if(group)group.open=true;}else link.removeAttribute('aria-current')});
   $('nav').classList.remove('open');$('menuBtn').setAttribute('aria-expanded','false');if(requested==='nextIntervalLessons')requestAnimationFrame(()=>$('nextIntervalLessons').scrollIntoView({behavior:'smooth'}));else window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('hashchange',showPage);showPage();
