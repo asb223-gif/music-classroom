@@ -20,6 +20,6 @@ async function downloadRemote(url,name,status){
 document.addEventListener('click',event=>{const b=event.target.closest('[data-pdf-preview]');if(b){event.preventDefault();openPdf(b.dataset.pdfPreview,b.dataset.pdfTitle||'악보 PDF')}});
 window.AlpacaResources={pdfCard,controls,openPdf,downloadRemote};
 const staticList=document.getElementById('staticMaterials');
-if(staticList){const items=[{name:'ALPACA_STUDIO_Chord_Guide.pdf',title:'코드의 구조와 기호',description:'16개 코드의 악보·구성음·음정 관계를 2쪽으로 정리한 교재입니다.'},{name:'ALPACA_STUDIO_Motive_Workbook.pdf',title:'모티브 발전 워크북 · 기초편',description:'반복·동형진행·전위·역행·확대와 축소의 정의와 악보 분석을 정리한 기초편입니다.'}];
+if(staticList){const items=[{name:'Diatonic 7th Chord.pdf',title:'12조 다이어토닉 7th 코드',description:'각 조의 구성음 확인과 왼손 근음·오른손 보이싱 연습용 프린트입니다.'},{name:'Vocing.pdf',title:'CM7 오른손 보이싱 예시',description:'왼손 C를 유지한 세 가지 오른손 배치의 원본 악보입니다.'},{name:'ALPACA_STUDIO_Chord_Guide.pdf',title:'코드의 구조와 기호',description:'16개 코드의 악보·구성음·음정 관계를 2쪽으로 정리한 교재입니다.'},{name:'ALPACA_STUDIO_Motive_Workbook.pdf',title:'모티브 발전 워크북 · 기초편',description:'반복·동형진행·전위·역행·확대와 축소의 정의와 악보 분석을 정리한 기초편입니다.'}];
 staticList.innerHTML=items.map(item=>`<article class="card material"><span class="kind">PDF · 학습 자료</span><h3>${esc(item.title)}</h3><p>${esc(item.description)}</p><p class="material-file-note">${esc(item.name)}</p>${controls(pdfPath(item.name),item.name)}</article>`).join('')}
 })();
