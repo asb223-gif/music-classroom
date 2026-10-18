@@ -11,7 +11,7 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson'];
+const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','nonChordLesson'];
 function showPage(){
   const requested=location.hash.slice(1),page=requested==='nextIntervalLessons'?'theory':pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
@@ -73,3 +73,6 @@ document.querySelectorAll('[data-interval]').forEach(button=>button.onclick=asyn
   }catch{alert('피아노 소리를 불러오지 못했습니다. piano 폴더를 함께 업로드했는지 확인해 주세요.')}
   finally{label.textContent=original}
 });
+
+// Local lesson navigation keeps the top-level page hash intact.
+document.querySelectorAll("[data-nct-target]").forEach(button=>button.addEventListener("click",()=>document.getElementById(button.dataset.nctTarget)?.scrollIntoView({behavior:"smooth",block:"start"})));
