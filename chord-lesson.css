@@ -7,3 +7,30 @@
 
 /* Original non-chord-tone scores, edition 44 */
 .nct-original-score{background:#fff;padding:12px 0}.nct-original-score img{display:block;width:100%;height:auto;max-height:none}.nct-original-score figcaption{margin-top:8px}.nct-ret-example{border-top:1px solid #E8D8C3;margin-top:24px;padding-top:16px}.nct-ret-example svg{max-width:520px;margin:auto}.nct-ret-example h4{color:#765A46}.nct-card .nct-rule{font-weight:650;letter-spacing:.02em}
+
+/* Diatonic: shared warm rounded lesson design, edition 48. */
+#diatonicLesson{min-width:0;color:#342820}
+#diatonicLesson p{line-height:1.85}
+#diatonicLesson .diatonic-intro{background:#E8D8C3;border-radius:22px;padding:30px;margin:28px 0}
+#diatonicLesson .diatonic-intro h3{font-size:1.6rem;margin:10px 0 18px}
+#diatonicLesson .diatonic-intro p:last-child{margin-bottom:0}
+.diatonic-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.12em;color:#765A46}
+.diatonic-jumps{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+.diatonic-jumps button{display:inline-flex;align-items:center;gap:9px;padding:8px 16px 8px 8px;border:1px solid #C5A98B;border-radius:999px;background:white;color:#765A46;text-decoration:none;font-size:.9rem;min-height:44px;box-sizing:border-box}
+.diatonic-jumps button span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#F7F2EA;font-size:.75rem;font-weight:700}
+.diatonic-jumps button:hover{background:#E8D8C3}
+.diatonic-jumps button:focus-visible{outline:3px solid #765A46;outline-offset:3px}
+#diatonicLesson .diatonic-card{background:white;border:1px solid #E8D8C3;border-radius:22px;padding:28px;margin:24px 0;scroll-margin-top:24px;min-width:0}
+.diatonic-card-heading{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.diatonic-step{display:grid;place-items:center;flex:0 0 52px;height:52px;border-radius:50%;background:#E8D8C3;color:#765A46;font-size:1.1rem;font-weight:700}
+.diatonic-card-heading>div{min-width:0}
+#diatonicLesson .diatonic-card-heading h3{font-size:1.4rem;margin:6px 0 0;line-height:1.45;overflow-wrap:anywhere}
+#diatonicLesson .diatonic-card-heading .section-label{font-size:.7rem;letter-spacing:.08em}
+#diatonicLesson .chord-card{background:#F7F2EA;padding:22px;border-radius:18px}
+#diatonicLesson .chord-card h3{margin-top:0}
+#diatonicLesson .chord-summary{background:#F7F2EA;border:0;border-left:3px solid #C5A98B;border-radius:0 14px 14px 0;padding:16px 20px;margin-top:22px}
+#diatonicLesson .chord-summary p:first-child{margin-top:0}
+#diatonicLesson .chord-summary p:last-child{margin-bottom:0}
+#diatonicLesson .diatonic-figure{background:#fff;margin:22px 0;padding:16px;border-color:#E8D8C3}
+#diatonicLesson .chord-book-link{padding:24px;border-radius:22px}
+@media(max-width:650px){#diatonicLesson .diatonic-intro,#diatonicLesson .diatonic-card{padding:20px} .diatonic-card-heading{gap:12px}.diatonic-step{flex-basis:42px;height:42px}#diatonicLesson .diatonic-card-heading h3{font-size:1.18rem}#diatonicLesson .diatonic-figure{padding:10px}#diatonicLesson .chord-card{padding:18px}.diatonic-jumps{gap:8px}.diatonic-jumps button{font-size:.8rem;padding-right:12px}}
