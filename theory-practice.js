@@ -18,10 +18,10 @@ function explanation(q){
  return text+`\n따라서 정답은 ${q.label}입니다. (전체 거리: ${q.distance}반음)`;
 }
 function stave(q){
- const lines=[40,52,64,76,88].map(y=>`<line x1="15" x2="235" y1="${y}" y2="${y}"/>`).join('');
- function note(index,change,x){const y=100-index*6;let ledger='';for(let v=100;v<=y;v+=12)ledger+=`<line x1="${x-13}" x2="${x+13}" y1="${v}" y2="${v}"/>`;for(let v=28;v>=y;v-=12)ledger+=`<line x1="${x-13}" x2="${x+13}" y1="${v}" y2="${v}"/>`;const stemx=y>64?x+7:x-7;return ledger+`<text x="${x-24}" y="${y+5}" stroke="none" font-size="18" text-anchor="middle">${accidental(change)}</text><ellipse cx="${x}" cy="${y}" rx="8" ry="5.5" transform="rotate(-18 ${x} ${y})"/><line x1="${stemx}" x2="${stemx}" y1="${y}" y2="${y+(y>64?-36:36)}"/>`}
- return `<svg viewBox="0 0 250 135" role="img" aria-label="${q.title} 악보"><g stroke="#b9b2c8">${lines}</g><path d="M40 111 C53 114 55 101 50 86 L37 37 C33 20 48 14 47 29 C46 43 26 54 25 70 C23 88 49 95 56 82 C65 65 39 59 35 74 C33 80 38 84 43 82 M37 37 C34 47 37 58 40 67" fill="none" stroke="#40394f" stroke-width="3.3"/><g fill="#40394f" stroke="#40394f" stroke-width="1.7">${note(q.lower,q.lowChange,102)}${note(q.upper,q.highChange,178)}</g></svg>`;
+ const scoreIndex=[...natural,...singles,...advanced].findIndex(pair=>pair[0]===q.lower&&pair[1]===q.upper&&(pair[2]||0)===q.lowChange&&(pair[3]||0)===q.highChange)+1;
+ return `<img class="interval-original-score" src="scores/interval-practice/${String(scoreIndex).padStart(2,'0')}.png" alt="${q.title} 악보" width="440" height="236" style="display:block;width:320px;max-width:100%;height:auto;margin:0 auto;background:white">`;
 }
+
 function init(id,pairs,unlock){
  const el=s=>document.getElementById(id+s),questions=pairs.map(question);let index=0,score=0,answered=false,mistakes=[];
  function draw(){const q=questions[index];answered=false;el('Progress').textContent=`${index+1} / ${questions.length} · ${index<10?'변화표 없는 음정':index<20?'♯ · ♭':'심화 음정'}`;el('Score').textContent=`정답 ${score}개`;el('Bar').max=questions.length;el('Bar').value=index;el('Question').innerHTML=stave(q);const title=document.createElement('span');title.textContent=q.title+'의 음정은?';el('Question').append(title);el('Feedback').hidden=true;el('Next').disabled=true;el('Next').hidden=false;el('Next').textContent=index===questions.length-1?'결과 보기':'다음 문제 →';el('Result').textContent='';
