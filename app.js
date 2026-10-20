@@ -11,7 +11,7 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','nonChordLesson','majorFirstLesson','minorFirstLesson','voiceLeadingLesson','accompanimentLesson'];
+const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','nonChordLesson','majorFirstLesson'];
 function showPage(){
   const requested=location.hash.slice(1),page=requested==='nextIntervalLessons'?'theory':pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
