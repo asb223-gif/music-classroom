@@ -106,7 +106,7 @@ else try{
   const base='https://www.gstatic.com/firebasejs/10.14.1/';
   const [App,fire,authentication,store]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-auth.js'),import(base+'firebase-storage.js')]);
   F=fire;A=authentication;S=store;const instance=App.initializeApp(firebaseConfig);db=F.getFirestore(instance);auth=A.getAuth(instance);storage=S.getStorage(instance);storage.maxUploadRetryTime=30000;storage.maxOperationRetryTime=15000;
-  import('./private-learning.js?v=58').then(m=>m.initPrivateLearning(instance)).catch(()=>{document.getElementById('privateImportStatus').textContent='개인 자료 설정을 불러오지 못했습니다. 새로고침해 주세요.'});
+  import('./private-learning.js?v=59').then(m=>m.initPrivateLearning(instance)).catch(()=>{document.getElementById('privateImportStatus').textContent='개인 자료 설정을 불러오지 못했습니다. 새로고침해 주세요.'});
   A.onAuthStateChanged(auth,async account=>{
     const revision=++authRevision;user=null;el('teacherWorkspace').hidden=true;el('teacherLogin').hidden=false;el('adminLogout').hidden=!account;
     students=[];lessons=[];payments=[];materials=[];selected=null;
