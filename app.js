@@ -11,7 +11,7 @@ $('menuBtn').onclick=()=>{const open=$('nav').classList.toggle('open');$('menuBt
 
 $('chordExample').onclick=()=>{selectedNotes.clear();selectedNotes.add(0);selectedNotes.add(4);drawChords()};
 const navLinks=[...document.querySelectorAll('#nav a')];
-const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','nonChordLesson','majorFirstLesson'];
+const pageIds=['home','tools','tempo','library','logic','theory','intervalPractice','motive','chordLesson','diatonicLesson','nonChordLesson','majorFirstLesson','melodyLesson'];
 function showPage(){
   const requested=location.hash.slice(1),page=requested==='nextIntervalLessons'?'theory':pageIds.includes(requested)?requested:'home';
   pageIds.forEach(id=>$(id).hidden=id!==page);
@@ -31,6 +31,7 @@ if (legacyStudentToken) {
     const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
     const [App,F,S] = await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-storage.js')]);
     const instance=App.initializeApp(firebaseConfig), db=F.getFirestore(instance), storage=S.getStorage(instance);
+    import('./private-learning.js?v=58').then(m=>m.initPrivateLearning(instance)).catch(()=>{document.getElementById('melodyStatus').textContent='개인 자료를 불러오지 못했습니다. 새로고침해 주세요.'});
     F.onSnapshot(F.query(F.collection(db,'materials'),F.orderBy('createdAt','desc')),snapshot=>{
       const materials=snapshot.docs.map(doc=>doc.data());$('materialEmpty').hidden=materials.length>0;
       $('materialList').replaceChildren(...materials.map(m=>{
